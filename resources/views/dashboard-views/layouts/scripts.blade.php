@@ -13,4 +13,5 @@
   <!-- endinject -->
   <!-- Custom js for this page-->
   <script src="{{ asset('js/dashboard-js/dashboard.js') }}"></script>
+  {{-- <script src="{{ asset('js/dashboard-js/jquery-file-upload.js') }}"></script> --}}
   <!-- End custom js for this page-->

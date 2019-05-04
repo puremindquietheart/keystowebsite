@@ -1,7 +1,12 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+import CKEditor from '@ckeditor/ckeditor5-vue'
 
 Vue.use(VueRouter)
+Vue.use(CKEditor)
+Vue.use(VueAxios, axios)
 
 import Main from './views/Main'
 import AddProduct from './views/AddProduct'
@@ -15,11 +20,11 @@ const router = new VueRouter({
             component: Main
         },
         {
-            path: '/keysto-admin-dashboard/add-product',
+            path: '/keysto-add-product',
             component: AddProduct,
         },
         {
-            path: '/keysto-admin-dashboard/product-list',
+            path: '/keysto-product-list',
             component: ProductList,
         },
     ],

@@ -3,8 +3,8 @@
         <li class="nav-item nav-profile">
             <div class="nav-link d-flex">
                 <div class="profile-image">
-                <img src="images/faces/face1.jpg" alt="image"/>
-                <span class="online-status online"></span> <!--change class online to offline or busy as needed-->
+                <img src="{{ asset('images/faces/face1.jpg') }}" alt="image"/>
+                <span class="online-status online"></span>
                 </div>
                 <div class="profile-name">
                     <p class="name">
@@ -17,25 +17,23 @@
                 </div>
             </div>
         </li>
-        @if(Auth::user()->id)
-            <li class="nav-item nav-category">
-                <span class="nav-link">Main</span>
-            </li>
-            <li class="nav-item">
-                <router-link to="/keysto-admin-dashboard" class="nav-link">
-                    <i class="icon-layout menu-icon"></i> <span class="menu-title">Dashboard</span>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link to="/keysto-admin-dashboard/add-product" class="nav-link">
-                    <i class="fa fa-plus-circle menu-icon"></i><span class="menu-title">Add Product</span>
-                </router-link>
-            </li>
-            <li class="nav-item">
-                <router-link to="/keysto-admin-dashboard/product-list" class="nav-link">
-                    <i class="fa fa-cubes menu-icon"></i> <span class="menu-title"> Product List</span>
-                </router-link>
-            </li>
-        @endif
+        <li class="nav-item nav-category">
+            <span class="nav-link">Main</span>
+        </li>
+        <li class="nav-item">
+            <router-link to="/keysto-admin-dashboard" class="nav-link">
+                <i class="icon-layout menu-icon"></i> <span class="menu-title">Dashboard</span>
+            </router-link>
+        </li>
+        <li class="nav-item">
+            <router-link to="/keysto-add-product" class="nav-link">
+                <i class="fa fa-plus-circle menu-icon"></i><span class="menu-title">Add Product</span>
+            </router-link>
+        </li>
+        <li class="nav-item">
+            <router-link to="/keysto-product-list" class="nav-link">
+                <i class="fa fa-cubes menu-icon"></i> <span class="menu-title"> Product List</span>
+            </router-link>
+        </li>
     </ul>
 </nav>

@@ -128,8 +128,14 @@ return [
     */
 
     'custom' => [
-        'attribute-name' => [
-            'rule-name' => 'custom-message',
+        'input_photo_bike_name' => [
+            'required' => "Bike Name is required. Please input valid name.",
+        ],
+        'input_photo_bike_description' => [
+            'required' => 'Bike Description is required. Please include bike specifications.',
+        ],
+        'input_photo_name' => [
+            'required' => 'Bike Image is required.',
         ],
     ],
 

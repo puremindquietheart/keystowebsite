@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Dashboard;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+
 use App\Http\Resources\Photos;
 use App\Model\AdminModel\Photos as PhotoModel;
+
+use Illuminate\Validation\ValidationException;
 
 class AdminDashboardController extends Controller
 {
@@ -16,14 +18,27 @@ class AdminDashboardController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $new_upload_bike = new PhotoModel();
+    {   
+        $validate_inputs = $request->validate([
+            'input_photo_bike_name' => 'required',
+            'input_photo_bike_description' => 'required',
+            'input_photo_name' => 'required'
+        ]);
 
-        $new_upload_bike = $request->input('input_photo_bike_name');
-        $new_upload_bike = $request->input('input_photo_bike_description');
-        $new_upload_bike = $request->input('input_photo_name');
+        if ($validate_inputs) {
+            
+            $check_bike_existence = PhotoModel::where('photo_name', $request->input_photo_bike_name)->count();
+            
+            if ($check_bike_existence == 0) {
 
-        return $new_upload_bike;
+                $new_bike = new PhotoModel();
+
+            } else {
+                return ['exist' => true, 'message' => 'Bike Model Already Exist!'];
+            }
+        } else {
+            return response()->json();
+        }
     }
 
     public function show($id)
@@ -44,14 +59,5 @@ class AdminDashboardController extends Controller
     public function destroy($id)
     {
         //
-    }
-
-    public function dashboard() {
-        if (Auth::check()) {
-            return view('dashboard-views.dashboard');
-        } else {
-            return redirect()->intended('/keysto-admin-login');
-        } 
-        
     }
 }
