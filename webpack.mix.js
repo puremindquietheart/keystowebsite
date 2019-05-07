@@ -13,3 +13,15 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
    .sass('resources/sass/app.scss', 'public/css');
+
+   module.exports = {
+      entry : "src/vueAutonumericTest.js",
+      output: {
+        filename: "dist/bundle.js"
+      },
+      resolve: {
+        alias: {
+          AutoNumeric: 'node_modules/autonumeric/dist/autoNumeric.min',
+        },
+      },
+    };

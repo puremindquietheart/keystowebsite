@@ -1,136 +1,189 @@
+<style scoped>
+    .table td, th {
+        text-align: center;   
+    }
+</style>
+
+</style>
+
+
 <template>
     <div class="col-md-12 grid-margin stretch-card">
         <div class="card">
             <div class="card-header bg-transparent border-success">
-                <h4 class="card-title">Add New Product</h4>
-                <div class="alert alert-success" v-if="success.status">
-                    <span>{{ success.message }}</span>
-                </div>
+                <h4 class="card-title">Create New Product</h4>
+                <button type="button" class="btn btn-primary btn-sm" @click="addModal"><i class="fa fa-plus-square"></i>New Bike</button>
+                <addmodal ref="addModalOpen"></addmodal>
+                <editmodal ref="editModalOpen"></editmodal>
             </div>
-            <form class="forms-horizontal" @submit.prevent="confirmNewBike">
-                <div class="card-body">
-                    <div class="form-group">
-                        <label>Bike Name</label>
-                        <div class="alert alert-warning" v-if="required.bike_name">
-                            <span>{{ message.bike_name }}</span>
-                        </div>
-                        <input type="text" class="form-control" v-model="photo_details.input_photo_bike_name" placeholder="Input Bike Name" autocomplete="off">
-                        
-                    </div>
-                    <div class="form-group">
-                        <label>Bike Description</label>
-                        <div class="alert alert-warning" v-if="required.bike_description">
-                            <span>{{ message.bike_description }}</span>
-                        </div>
-                        <ckeditor :editor="editor" v-model="photo_details.input_photo_bike_description"></ckeditor>
-                    </div>
-                    <div class="form-group">
-                        <label>Upload Image</label>
-                        <div class="alert alert-warning" v-if="required.bike_image">
-                            <span>{{ message.bike_image }}</span>
-                        </div>
-                        <input type="file" class="form-control" @change="uploadedPhotoDetails" ref="fileInputName" placeholder="Upload Bike Image">
-                    </div>
+            <div class="card-body table-responsive">
+                <h4 class="card-title">Keysto Bike List</h4>
+                <div v-if="success" class="alert alert-success">
+                    {{ message }}
                 </div>
-                <div class="card-footer bg-transparent border-success">
-                    <button type="submit" class="btn btn-success mr-2"><i class="mdi mdi-cloud-download"></i>Upload</button>
+                <div v-if="available === 1" class="alert alert-success">
+                    {{ message }}
                 </div>
-            </form>
+                <div v-else-if="available === 0" class="alert alert-danger">
+                    {{ message }}
+                </div>
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th>Bike Name</th>
+                        <th>Bike Quantity</th>
+                        <th>Bike Price</th>
+                        <th>Bike Available</th>
+                        <th>Edit Bike Details</th>
+                        <th>Upload</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="details in bike_details" v-bind:key="details.id">
+                            <td>{{ details.bike_name }}</td>
+                            <td>{{ details.bike_quantity }} PC/s</td>
+                            <td>{{ details.bike_price | toCurrency }}</td>
+                            <td v-if="details.bike_available == 1">
+                                <button type="button" class="btn btn-primary btn-sm" @click="bikeAvailable(details.id)"><i class="fa fa-check"></i> Available</button>
+                            </td>
+                            <td v-else-if="details.bike_available == 0">
+                                <button type="button" class="btn btn-danger btn-sm" @click="bikeAvailable(details.id)"><i class="fa fa-ban"></i> Not Available</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-success btn-sm" @click="showBikeDetails(details.id)"><i class="fa fa-edit"></i> Edit Details</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-success btn-sm" @click="uploadImage(details.id)"><i class="mdi mdi-cloud-download"></i> Upload</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <nav>
+                    <ul class="pagination rounded-flat pagination-success">
+                        <li class="page-item" v-bind:class="[{ disabled: !bike_pagination.prev_page_url }]">
+                            <a class="page-link" href="#" @click="fetchBikeDetails(bike_pagination.prev_page_url)"><i class="mdi mdi-chevron-left"></i></a>
+                        </li>
+                        <li class="page-item disabled"><a class="page-link" href="#">Page {{ bike_pagination.current_page }} of {{ bike_pagination.last_page }} </a></li>
+                        <li class="page-item" v-bind:class="[{ disabled: !bike_pagination.next_page_url }]">
+                            <a class="page-link" href="#" @click="fetchBikeDetails(bike_pagination.next_page_url)"><i class="mdi mdi-chevron-right"></i></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         </div>       
     </div>
 </template>
 
 <script>
-    import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-    export default {
-        data() {
-            return {
-                photo_details: {
-                    input_photo_bike_name: '',
-                    input_photo_bike_description: '',
-                    input_photo_name: '',
-                    image_size: ''
-                },
-                message: {
-                    bike_name: '',
-                    bike_description: '',
-                    bike_image: ''
-                },
-                required: {
-                    bike_name: false,
-                    bike_description: false,
-                    bike_image: false
-                },
-                success: {
-                    status: false,
-                    message: ''
-                },
-                editor: ClassicEditor
-            }
-        },
-        methods: {
-            uploadedPhotoDetails(event) {
-                this.photo_details.input_photo_name = event.target.files[0].name;
-                this.photo_details.image_size = event.target.files[0].size / 1000000;
-            },
-            confirmNewBike() {
-                this.axios
-                    .post('api/keysto-admin', this.photo_details)
-                    .then((response) => {
-                        const input = this.$refs.fileInputName;
-                        
-                        if (response.status == 200) {
-                            input.type = 'text';
-                            input.type = 'file';
-                            // photo details empty
-                            this.photo_details.input_photo_bike_name = '';
-                            this.photo_details.input_photo_bike_description = '';
-                            this.photo_details.input_photo_name = '';
-                            this.photo_details.image_size = '';
-                            // message empty
-                            this.message.bike_name = '';
-                            this.message.bike_description = '';
-                            this.message.bike_image = '';
-                            // required status
-                            this.required.bike_name = false;
-                            this.required.bike_description = false;
-                            this.required.bike_image = false;
-                            // success message
-                            this.success.status = true;
-                            this.success.message = 'New Image was Uploaded Successfully!';
-                            // success message fade out
-                            setTimeout(() => {
-                                this.success.message = '';
-                                this.success.status = false;
-                            }, 5000);
-                        }
-                    })
-                    .catch((errors) => {
-                        const error = errors.response.data.errors;
 
-                        if (error.input_photo_bike_name) {
-                            this.required.bike_name = true;
-                            this.message.bike_name = error.input_photo_bike_name[0];
-                        } else {
-                            this.required.bike_name = false;
-                        }
+import addmodal from './modal-vue/AddModal'
+import editmodal from './modal-vue/EditModal'
 
-                        if (error.input_photo_bike_description) {
-                            this.required.bike_description = true;
-                            this.message.bike_description = error.input_photo_bike_description[0];
-                        } else {
-                            this.required.bike_description = false;
-                        }
-
-                        if (error.input_photo_name) {
-                            this.required.bike_image = true;
-                            this.message.bike_image = error.input_photo_name[0];
-                        } else {
-                            this.required.bike_image = false;
-                        }
-                    });
+export default {
+    data () {
+        return {
+            bike_details: [],
+            bike_pagination: {},
+            success: false,
+            available: '',
+            message: '',
+            put_method: {
+                bike_available: '',
+                bike_details: ''
             }
         }
+    },
+    components: {
+        addmodal,
+        editmodal
+    },
+    created() {
+        this.fetchBikeDetails();
+    },
+    methods: {
+        // for table
+        fetchBikeDetails(page_url) {
+            page_url = page_url || '/api/keysto-bike';
+            fetch(page_url)
+            .then(res => res.json())
+            .then(res => {
+                this.bike_details = res.data;
+                this.bikePagination(res.meta, res.links);
+            }).catch(err => console.log(err));
+        },
+
+        // for pagination
+        bikePagination(meta, links) {
+            let pagination = {
+                current_page: meta.current_page,
+                last_page: meta.last_page,
+                next_page_url: links.next,
+                prev_page_url: links.prev
+            }
+
+            this.bike_pagination = pagination;
+        },
+
+        // for product availability
+        bikeAvailable(id) {
+            this.put_method.bike_available = 1;
+
+            fetch('api/keysto-bike/'+id, {
+                method: 'put',
+                body: JSON.stringify(this.put_method),
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }).then(res => res.json())
+            .then(result => {
+               if (result.unavailable === false) {
+                    this.$swal({
+                        title: 'Available!',
+                        type: 'success',
+                        text: 'Bike was Available!'
+                    }).then(() => {
+                        this.available = 1;
+                        this.message = result.message;
+                        this.fetchBikeDetails();
+                    });
+                    setTimeout(() => {
+                        this.available = '';
+                        this.message = '';
+                    }, 3500);
+               } else if (result.unavailable === true) {
+                    this.$swal({
+                        title: 'Unavailable!',
+                        type: 'warning',
+                        text: 'Bike was Unavailable!'
+                    }).then(() => {
+                        this.available = 0;
+                        this.message = result.message;
+                        this.fetchBikeDetails();
+                    });
+                    setTimeout(() => {
+                        this.available = '';
+                        this.message = '';
+                    }, 3500);
+               }
+            })  
+            .catch(err => console.log(err))
+        },
+        // for add modal open
+        addModal() {
+            this.$refs.addModalOpen.showAddModal();
+        },
+
+        // for edit modal open
+        showBikeDetails(id) {
+            this.$refs.editModalOpen.showEditModal(id);
+        },
+
+        uploadImage(id) {
+            console.log(id);
+        }
     }
+}
 </script>
 

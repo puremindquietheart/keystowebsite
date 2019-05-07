@@ -32,7 +32,7 @@
         </li>
         <li class="nav-item">
             <router-link to="/keysto-product-list" class="nav-link">
-                <i class="fa fa-cubes menu-icon"></i> <span class="menu-title"> Product List</span>
+                <i class="fa fa-cubes menu-icon"></i> <span class="menu-title"> Product List Preview</span>
             </router-link>
         </li>
     </ul>
