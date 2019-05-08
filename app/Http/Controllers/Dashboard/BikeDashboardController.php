@@ -77,8 +77,41 @@ class BikeDashboardController extends Controller
                 }
             }
 
-        } else if ($request->bike_details === 1) {
-            echo "HAH!";
+        } else {
+            $update_bike_details = BikeModel::findOrFail($id);
+
+            if ($update_bike_details->bike_name === $request->edit_bike_name) {
+
+                $update_bike_details->bike_price = $request->edit_bike_price;
+
+                $update_bike_details->bike_quantity = $request->edit_bike_qty;
+
+                if ($update_bike_details->save()) {
+                    $bike_details_updated =  new BikeResource($update_bike_details);
+                    return ['updated' => true, 'message' => 'Bike Details was Updated Successfully!', $bike_details_updated];
+                } 
+            } else {
+                $check_bike_existence = BikeModel::where('bike_name', $request->edit_bike_name)->count();
+
+                if ($check_bike_existence === 0) {
+
+                    $update_bike_details->bike_name = $request->edit_bike_name;
+
+                    $update_bike_details->bike_price = $request->edit_bike_price;
+
+                    $update_bike_details->bike_quantity = $request->edit_bike_qty;
+
+                    if ($update_bike_details->save()) {
+
+                        $bike_details_updated =  new BikeResource($update_bike_details);
+
+                        return ['updated' => true, 'message' => 'Bike Details was Updated Successfully!', $bike_details_updated];
+                    } 
+                } else {
+                    return ['updated' => false];
+                }
+            }
+            
         }
     }
 }

@@ -36,17 +36,12 @@ export default {
     data() {
         return {
             edit_bike_details: {
-                bike_id: '',
                 edit_bike_name: '',
                 edit_bike_qty: '',
                 edit_bike_price: '',
-            }
+            },
+            bike_id: '',
         }
-    },
-    watch: {
-        // $('#editBikeModal'): function () {
-
-        // }
     },
     methods: {
         showEditModal(bike_id) {
@@ -56,7 +51,7 @@ export default {
                 method: 'get',
             }).then(res => res.json())
             .then(result => {
-                this.edit_bike_details.bike_id = result.data.id;
+                this.bike_id = result.data.id;
                 this.edit_bike_details.edit_bike_name = result.data.bike_name;
                 this.edit_bike_details.edit_bike_qty = result.data.bike_quantity;
                 this.edit_bike_details.edit_bike_price = result.data.bike_price;
@@ -65,18 +60,40 @@ export default {
         },
 
         confirmUpdateBike() {
-            this.$parent.put_method.bike_details = 1;
-            // fetch('api/keysto-bike/'+this.bike_id, {
-            //     method: 'put',
-            //     body: JSON.stringify(this.edit_bike_details),
-            //     headers: {
-            //         'content-type': 'application/json'
-            //     }
-            // }).then(res => res.json())
-            // .then(result => {
-            //     console.log(result);
-            // })
-            // .catch(err => console.log(err))
+            fetch('api/keysto-bike/'+this.bike_id, {
+                method: 'put',
+                body: JSON.stringify(this.edit_bike_details),
+                headers: {
+                    'content-type': 'application/json'
+                }
+            }).then(res => res.json())
+            .then(data => {
+                if (data.updated === true) {
+                    $('#editBikeModal').modal('hide');
+                    this.$swal({
+                        title: 'Updated!',
+                        text: 'Bike Details was Updated Successfully!',
+                        type: 'success'
+                    }).then(() => {
+                        this.$parent.success = true;
+                        this.$parent.message = data.message;
+                    });
+
+                    setTimeout(() => {
+                        this.$parent.message = '';
+                        this.$parent.success = false;
+                    }, 3500);
+                } else if (data.updated === false) {
+                    this.$swal({
+                        title: 'Exist!',
+                        text: 'Bike Name Already Exist!',
+                        type: 'warning'
+                    }).then(() => {
+                        this.edit_bike_details.edit_bike_name = '';
+                    });
+                }
+            })
+            .catch(err => console.log(err))
         }
     }
 }

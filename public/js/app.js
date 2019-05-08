@@ -2206,6 +2206,7 @@ module.exports = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modal_vue_AddModal__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modal-vue/AddModal */ "./resources/js/views/modal-vue/AddModal.vue");
 /* harmony import */ var _modal_vue_EditModal__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modal-vue/EditModal */ "./resources/js/views/modal-vue/EditModal.vue");
+/* harmony import */ var _modal_vue_UploadModal__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modal-vue/UploadModal */ "./resources/js/views/modal-vue/UploadModal.vue");
 //
 //
 //
@@ -2284,6 +2285,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -2295,14 +2298,14 @@ __webpack_require__.r(__webpack_exports__);
       available: '',
       message: '',
       put_method: {
-        bike_available: '',
-        bike_details: ''
+        bike_available: ''
       }
     };
   },
   components: {
     addmodal: _modal_vue_AddModal__WEBPACK_IMPORTED_MODULE_0__["default"],
-    editmodal: _modal_vue_EditModal__WEBPACK_IMPORTED_MODULE_1__["default"]
+    editmodal: _modal_vue_EditModal__WEBPACK_IMPORTED_MODULE_1__["default"],
+    uploadmodal: _modal_vue_UploadModal__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   created: function created() {
     this.fetchBikeDetails();
@@ -2393,7 +2396,7 @@ __webpack_require__.r(__webpack_exports__);
       this.$refs.editModalOpen.showEditModal(id);
     },
     uploadImage: function uploadImage(id) {
-      console.log(id);
+      this.$refs.uploadModalOpen.showUploadModal(id);
     }
   }
 });
@@ -2563,15 +2566,12 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       edit_bike_details: {
-        bike_id: '',
         edit_bike_name: '',
         edit_bike_qty: '',
         edit_bike_price: ''
-      }
+      },
+      bike_id: ''
     };
-  },
-  watch: {// $('#editBikeModal'): function () {
-    // }
   },
   methods: {
     showEditModal: function showEditModal(bike_id) {
@@ -2583,7 +2583,7 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (res) {
         return res.json();
       }).then(function (result) {
-        _this.edit_bike_details.bike_id = result.data.id;
+        _this.bike_id = result.data.id;
         _this.edit_bike_details.edit_bike_name = result.data.bike_name;
         _this.edit_bike_details.edit_bike_qty = result.data.bike_quantity;
         _this.edit_bike_details.edit_bike_price = result.data.bike_price;
@@ -2592,17 +2592,45 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     confirmUpdateBike: function confirmUpdateBike() {
-      this.$parent.put_method.bike_details = 1; // fetch('api/keysto-bike/'+this.bike_id, {
-      //     method: 'put',
-      //     body: JSON.stringify(this.edit_bike_details),
-      //     headers: {
-      //         'content-type': 'application/json'
-      //     }
-      // }).then(res => res.json())
-      // .then(result => {
-      //     console.log(result);
-      // })
-      // .catch(err => console.log(err))
+      var _this2 = this;
+
+      fetch('api/keysto-bike/' + this.bike_id, {
+        method: 'put',
+        body: JSON.stringify(this.edit_bike_details),
+        headers: {
+          'content-type': 'application/json'
+        }
+      }).then(function (res) {
+        return res.json();
+      }).then(function (data) {
+        if (data.updated === true) {
+          $('#editBikeModal').modal('hide');
+
+          _this2.$swal({
+            title: 'Updated!',
+            text: 'Bike Details was Updated Successfully!',
+            type: 'success'
+          }).then(function () {
+            _this2.$parent.success = true;
+            _this2.$parent.message = data.message;
+          });
+
+          setTimeout(function () {
+            _this2.$parent.message = '';
+            _this2.$parent.success = false;
+          }, 3500);
+        } else if (data.updated === false) {
+          _this2.$swal({
+            title: 'Exist!',
+            text: 'Bike Name Already Exist!',
+            type: 'warning'
+          }).then(function () {
+            _this2.edit_bike_details.edit_bike_name = '';
+          });
+        }
+      })["catch"](function (err) {
+        return console.log(err);
+      });
     }
   }
 });
@@ -3823,7 +3851,9 @@ var render = function() {
           _vm._v(" "),
           _c("addmodal", { ref: "addModalOpen" }),
           _vm._v(" "),
-          _c("editmodal", { ref: "editModalOpen" })
+          _c("editmodal", { ref: "editModalOpen" }),
+          _vm._v(" "),
+          _c("uploadmodal", { ref: "uploadModalOpen" })
         ],
         1
       ),
@@ -19785,6 +19815,38 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_EditModal_vue_vue_type_template_id_004607ea___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
+
+/***/ }),
+
+/***/ "./resources/js/views/modal-vue/UploadModal.vue":
+/*!******************************************************!*\
+  !*** ./resources/js/views/modal-vue/UploadModal.vue ***!
+  \******************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+var render, staticRenderFns
+var script = {}
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_0__["default"])(
+  script,
+  render,
+  staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+component.options.__file = "resources/js/views/modal-vue/UploadModal.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 

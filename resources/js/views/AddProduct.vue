@@ -15,6 +15,7 @@
                 <button type="button" class="btn btn-primary btn-sm" @click="addModal"><i class="fa fa-plus-square"></i>New Bike</button>
                 <addmodal ref="addModalOpen"></addmodal>
                 <editmodal ref="editModalOpen"></editmodal>
+                <uploadmodal ref="uploadModalOpen"></uploadmodal>
             </div>
             <div class="card-body table-responsive">
                 <h4 class="card-title">Keysto Bike List</h4>
@@ -80,6 +81,7 @@
 
 import addmodal from './modal-vue/AddModal'
 import editmodal from './modal-vue/EditModal'
+import uploadmodal from './modal-vue/UploadModal'
 
 export default {
     data () {
@@ -90,14 +92,14 @@ export default {
             available: '',
             message: '',
             put_method: {
-                bike_available: '',
-                bike_details: ''
+                bike_available: ''
             }
         }
     },
     components: {
         addmodal,
-        editmodal
+        editmodal,
+        uploadmodal
     },
     created() {
         this.fetchBikeDetails();
@@ -181,7 +183,7 @@ export default {
         },
 
         uploadImage(id) {
-            console.log(id);
+            this.$refs.uploadModalOpen.showUploadModal(id);
         }
     }
 }
