@@ -54,7 +54,7 @@
                                 <button type="button" class="btn btn-success btn-sm" @click="showBikeDetails(details.id)"><i class="fa fa-edit"></i> Edit Details</button>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-success btn-sm" @click="uploadImage(details.id)"><i class="mdi mdi-cloud-download"></i> Upload</button>
+                                <button type="button" class="btn btn-success btn-sm" @click="uploadImage(details.id)"><i class="fa fa-upload"></i> Upload</button>
                             </td>
                         </tr>
                     </tbody>

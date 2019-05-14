@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Dashboard;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-// use App\Http\Resources\Photos;
-// use App\Model\AdminModel\Photos as PhotoModel;
 use App\Http\Resources\Bikes as BikeResource;
 use App\Model\AdminModel\Bikes as BikeModel;
 
@@ -16,9 +14,9 @@ class BikeDashboardController extends Controller
 {
     public function index()
     {
-        $articles = BikeModel::orderBy('id', 'desc')->paginate(5);
+        $bikes = BikeModel::orderBy('id', 'desc')->paginate(5);
 
-        return BikeResource::collection($articles);
+        return BikeResource::collection($bikes);
     }
 
     public function store(Request $request)
@@ -48,9 +46,9 @@ class BikeDashboardController extends Controller
 
     public function show($id)
     {
-       $get_bike_details = BikeModel::findOrFail($id);
+        $get_bike_details = BikeModel::findOrFail($id);
 
-       return new BikeResource($get_bike_details);
+        return new BikeResource($get_bike_details);
     }
 
     public function update(Request $request, $id)
